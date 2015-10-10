@@ -2,7 +2,7 @@
   "name": "alldigitalrewards/rewards",
   "type": "library",
   "description": "All Digital Rewards API Class",
-  "keywords": ["all digital rewards, rewards, loyalty"],
+  "keywords": ["all digital rewards", "rewards", "loyalty"],
   "homepage": "http://alldigitalrewards.com",
   "license": "Copyright",
   "authors": [
