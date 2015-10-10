@@ -1,7 +1,10 @@
 <?php
 require_once "../src/Rewards.php";
+$endpoint = 'http://marketplace.alldigitalrewards.com';
+$apiUser = 'demouser';
+$apiKey = 'examplekey';
 
-$rewards = new \ADR\Rewards('http://marketplace.alldigitalrewards.com', 'alldigitalrewards', '6e68b012d3bc897df484300926b976');
+$rewards = new \ADR\Rewards($endpoint, $apiUser, $apiKey);
 
 /* Redemptions
 
