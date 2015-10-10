@@ -1,0 +1,20 @@
+{
+  "name": "alldigitalrewards/rewards",
+  "type": "library",
+  "description": "All Digital Rewards API Class",
+  "keywords": ["all digital rewards, rewards, loyalty"],
+  "homepage": "http://alldigitalrewards.com",
+  "license": "Copyright",
+  "authors": [
+    {
+      "name": "Zech Walden",
+      "email": "zech@zewadesign.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0"
+  },
+  "autoload": {
+    "psr-4": {"ADR\\": "src/"}
+  }
+}

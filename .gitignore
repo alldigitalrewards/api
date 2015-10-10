@@ -1,0 +1,16 @@
+# IDE
+.idea/
+
+# Vagrant
+puphpet/
+Vagrantfile
+.vagrant/
+
+# Composer 
+/vendor/
+
+# Buildable Data
+/build/logs/
+/build/coverage/
+/build/pdepend/
+/build/phpdox/
