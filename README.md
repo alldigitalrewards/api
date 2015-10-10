@@ -8,3 +8,14 @@ composer require alldigitalrewards/rewards
 ```
 
 [PHP](https://php.net) 5.5+
+
+# Usage
+```
+$endpoint = 'marketplace.alldigitalrewards.com';
+$apiUser = 'demouser';
+$apiKey = 'examplekey';
+
+$reward = new \ADR\Rewards($endpoint, $apiUser, $apiKey);
+
+var_dump(json_decode($reward->getRedemptionCampaigns()));
+```
