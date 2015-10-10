@@ -1,11 +1,6 @@
 # IDE
 .idea/
 
-# Vagrant
-puphpet/
-Vagrantfile
-.vagrant/
-
 # Composer 
 /vendor/
 
