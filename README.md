@@ -11,7 +11,7 @@ composer require alldigitalrewards/rewards
 
 # Usage
 ```
-$endpoint = 'marketplace.alldigitalrewards.com';
+$endpoint = 'http://marketplace.alldigitalrewards.com';
 $apiUser = 'demouser';
 $apiKey = 'examplekey';
 
