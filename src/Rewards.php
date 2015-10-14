@@ -124,13 +124,27 @@ class Rewards
             $url .= '?' . $this->prepareQuery($params);
         }
 
-        $ch = curl_init($url);
-        $this->prepareCURL($ch, $params);
-        $data = curl_exec($ch);
-        $status = curl_getinfo($ch);
-        curl_close($ch);
+        try {
 
-        return $this->formatResponse($status['http_code'], $data);
+            $ch = curl_init($url);
+            $this->prepareCURL($ch, $params);
+            $data = curl_exec($ch);
+
+            if(!curl_error($ch)) {
+
+                $status = curl_getinfo($ch);
+                curl_close($ch);
+
+                return $this->formatResponse($status['http_code'], $data);
+
+            }
+
+            throw new \Exception("Unable to make API Connection");
+
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            exit;
+        }
     }
 
     /**
