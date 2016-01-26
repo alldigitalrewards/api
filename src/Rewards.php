@@ -16,20 +16,23 @@ namespace ADR;
  */
 class Rewards
 {
-    /** @var string vOffice API Endpoint */
+    /** @var string API Endpoint */
     private $apiUrl = '';
 
-    /** @var string vOffice API key */
+    /** @var string API key */
     protected $apiUser;
 
-    /** @var string vOffice API key */
+    /** @var string API key */
     protected $apiKey;
 
-    /** @var string vOffice's medium image url, 600x400 */
+    /** @var string medium image url, 600x400 */
     public $imageURL = '';
 
-    /** @var string vOffice's full image url, 1440x? */
+    /** @var string full image url, 1440x? */
     private $type = 'get';
+
+    /** @var string full image url, 1440x? */
+    private $lang = 'en';
 
     /**
      * Class Construct
@@ -46,6 +49,28 @@ class Rewards
         $this->imageURL = $endpoint . '/resources/app/products/images/';
         $this->apiUser = $apiUser;
         $this->apiKey = $apiKey;
+    }
+
+    /**
+     * Set the language for return data
+     *
+     * @param string $lang
+     *
+     * @return Rewards
+     */
+    public function setLanguage($lang = 'en')
+    {
+        $this->lang = $lang;
+    }
+
+    /**
+     * Get the set language
+     *
+     * @return Rewards
+     */
+    public function getLanguage()
+    {
+        return $this->lang;
     }
 
     /**
@@ -121,15 +146,16 @@ class Rewards
         $url = $this->apiUrl . '/' . $endpoint;
 
         if( $this->type === 'get' && ! empty ( $params ) ) {
-            $url .= '?' . $this->prepareQuery($params);
+            $url .= '?' . $this->prepareQuery($params) . '&lang=' . $this->lang;
+        } else {
+            $url .= '?lang=' . $this->lang;
         }
-
         try {
-
+//            var_dump($url);
+//            var_dump($params)
             $ch = curl_init($url);
             $this->prepareCURL($ch, $params);
             $data = curl_exec($ch);
-
             if(!curl_error($ch)) {
 
                 $status = curl_getinfo($ch);
@@ -210,9 +236,9 @@ class Rewards
      * @access public
      * @return string
      */
-    public function getRedemptionCampaign($campaignId)
+    public function getRedemptionCampaign($id)
     {
-        return $this->call('redemption/' . $campaignId, 'get');
+        return $this->call('redemption/' . $id, 'get');
     }
 
     /**
@@ -227,7 +253,7 @@ class Rewards
      */
     public function getRedemptionCampaignPins($campaignId)
     {
-        return $this->call('redemption/' . $campaignId . '/pin', 'get');
+        return $this->call('redemption/' . $campaignId, 'get');
     }
 
     /* Rewards */
@@ -310,6 +336,48 @@ class Rewards
         return $this->call('reward/category/' . $categoryId, 'get');
     }
 
+
+    /* Gamification */
+
+    public function fetchGameInstance($uniqueId, $gameId)
+    {
+        return $this->call('gamification/' . $uniqueId, 'post', ['game_id' => $gameId]);
+    }
+
+    /**
+     * Fetches a game by it's id
+     **
+     * @param int $gameId
+     *
+     * @access public
+     * @return string
+     */
+    public function getGame($gameId)
+    {
+        return $this->call('gamification/' . $gameId, 'get');
+    }
+
+    /**
+     * Fetches games
+     *
+     * This call will request the endpoints active games available for gameplay
+     *
+     * @param int $page
+     * @param int $offset
+     *
+     * @access public
+     * @return string
+     */
+    public function getGames($page = 1, $offset = 30)
+    {
+        $params = [
+            'page' => $page,
+            'offset' => $offset
+        ];
+
+        return $this->call('gamification', 'get', $params);
+    }
+
     /* Users */
 
     /**
@@ -358,9 +426,13 @@ class Rewards
      * @access public
      * @return string
      */
-    public function getUserTransactions($uniqueId)
+    public function getUserTransactions($uniqueId, $page = 1, $offset = 30)
     {
-        return $this->call('user/' . $uniqueId . '/transaction', 'get');
+        $params = [
+            'page' => $page,
+            'offset' => $offset
+        ];
+        return $this->call('user/' . $uniqueId . '/transaction', 'get', $params);
     }
 
     /**
