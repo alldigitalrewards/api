@@ -285,9 +285,7 @@ class Rewards
         ];
 
         if( ! empty ( $filters ) ) {
-
             $params = array_merge($params, $filters);
-
         }
 
         return $this->call('reward', 'get', $params);
