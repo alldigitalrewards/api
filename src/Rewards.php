@@ -152,7 +152,7 @@ class Rewards
         }
         try {
 //            var_dump($url);
-//            var_dump($params)
+//            var_dump($params);die();
             $ch = curl_init($url);
             $this->prepareCURL($ch, $params);
             $data = curl_exec($ch);
@@ -314,9 +314,9 @@ class Rewards
      * @access public
      * @return string
      */
-    public function getRewardCategories()
+    public function getRewardCategories($params = [])
     {
-        return $this->call('reward/category', 'get');
+        return $this->call('reward/category', 'get', $params);
     }
 
     /**
