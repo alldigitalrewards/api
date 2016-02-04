@@ -523,9 +523,24 @@ class Rewards
      * @access public
      * @return string
      */
-    public function getUserSSOToken($uniqueId)
+    public function createUserSSOToken($uniqueId)
     {
-        return $this->call('user/' . $uniqueId . '/sso', 'get');
+        return $this->call('user/' . $uniqueId . '/sso', 'post');
+    }
+
+    /**
+     * Authenticates a single user SSO token
+     *
+     * This call will authenticate the $uniqueId's resource availability of provided SSO token at the endpoint
+     *
+     * @param int $uniqueId
+     *
+     * @access public
+     * @return string
+     */
+    public function getUserSSOToken($token)
+    {
+        return $this->call('user/sso/' . $token, 'get');
     }
 
     /**
