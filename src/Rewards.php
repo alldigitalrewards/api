@@ -45,7 +45,7 @@ class Rewards
      */
     public function __construct($endpoint, $apiUser, $apiKey)
     {
-        $this->apiUrl = $endpoint . '/api';
+        $this->apiUrl = $endpoint . 'api';
         $this->imageURL = $endpoint . '/resources/app/products/images/';
         $this->apiUser = $apiUser;
         $this->apiKey = $apiKey;
@@ -151,8 +151,8 @@ class Rewards
             $url .= '?lang=' . $this->lang;
         }
         try {
-//            var_dump($url);
-//            var_dump($params);die();
+//            print_r($url);
+//            print_r($params);
             $ch = curl_init($url);
             $this->prepareCURL($ch, $params);
             $data = curl_exec($ch);
@@ -166,7 +166,6 @@ class Rewards
             }
 
             throw new \Exception("Unable to make API Connection");
-
         } catch (\Exception $e) {
             echo $e->getMessage();
             exit;
@@ -292,6 +291,34 @@ class Rewards
     }
 
     /**
+     * Fetches reward groups
+     *
+     * This call will request the reward groups at the endpoint
+     *
+     * @access public
+     * @return string
+     */
+    public function getRewardGroups($params = [])
+    {
+        return $this->call('reward/group', 'get', $params);
+    }
+
+    /**
+     * Fetches a reward group
+     *
+     * This call will request the reward group at the endpoint
+     *
+     * @param int $groupId
+     *
+     * @access public
+     * @return string
+     */
+    public function getRewardGroup($groupId)
+    {
+        return $this->call('reward/group/' . $groupId, 'get');
+    }
+
+    /**
      * Fetches a single reward
      *
      * This call will request the resource $rewardId at the endpoint
@@ -404,14 +431,18 @@ class Rewards
      *
      * This call will request the resource $uniqueId at the endpoint
      *
-     * @param int $uniqueId
+     * @param int|string $uniqueId|$email
      *
      * @access public
      * @return string
      */
-    public function getUser($uniqueId)
+    public function getUser($userIdentifier)
     {
-        return $this->call('user/' . $uniqueId, 'get');
+        if(is_int($userIdentifier)) {
+            return $this->call('user/' . $userIdentifier, 'get');
+        } else {
+            return $this->call('user/' . urlencode($userIdentifier), 'get');
+        }
     }
 
     /**
@@ -544,6 +575,26 @@ class Rewards
     }
 
     /**
+     * Authenticates a user resource
+     *
+     * This call will request authentication of $uniqueId's email and password, returning their user
+     *
+     * @param int $uniqueId
+     *
+     * @access public
+     * @return string
+     */
+    public function authenticateUser($email, $password)
+    {
+        $credentials = [
+            'email_address' => urlencode($email),
+            'password' => sha1($password)
+        ];
+
+        return $this->call('user/authenticate/', 'get', $credentials);
+    }
+
+    /**
      * Create a user
      *
      * This call will create a user at the endpoint
@@ -591,11 +642,17 @@ class Rewards
      *
      * This call will create a user transaction with $uniqueId resource at the endpoint
      *
+     * If an object is supplied instead of an integer for uniqueId, a user will be generated with the object provided,
+     * and the transaction assigned to them. This will enable "Guest Checkouts" . You may optionally supply
+     * a unique ID for continuity which will then be used for future exchanges.
+     *
+     * If you do not provide a unique ID, one will be generated.
+     *
      * To create a redemption, please ensure you provide the proper campaign pin & id.
      * If you have any physical products in your reward list, you must provide the shipping
      * address, if not already stored for the resource
      *
-     * @param int $uniqueId
+     * @param int|object $userIdentifier|user object
      * @param array $transaction
      * @param array $transaction['rewards']
      * @param string $transaction['campaign_pin'] (optional)
@@ -612,8 +669,20 @@ class Rewards
      * @access public
      * @return string
      */
-    public function createUserTransaction($uniqueId, array $transaction)
+    public function createUserTransaction($userIdentifier, array $transaction)
     {
-        return $this->call('user/' . $uniqueId . '/transaction', 'post', $transaction);
+        if(!is_int($userIdentifier)) {
+            $user = json_decode($this->getUser($userIdentifier->email_address));
+        } else {
+            $user = json_decode($this->getUser($userIdentifier));
+        }
+
+        if($user->success === false && !is_int($userIdentifier)) {
+            $user = (array)$userIdentifier;
+            $user = json_decode($this->createUser($user));
+        }
+
+        $user = $user->user;
+        return $this->call('user/' . $user->unique_id . '/transaction', 'post', $transaction);
     }
 }
