@@ -595,6 +595,36 @@ class Rewards
     }
 
     /**
+     * Password recovery for user resource
+     *
+     * This call will request a password recovery token of user resource
+     *
+     * @param int $uniqueId
+     *
+     * @access public
+     * @return string
+     */
+    public function fetchPasswordToken($email, $senderEmail, $senderName, $url)
+    {
+        return $this->call('user/passwordRecovery/', 'get', ['email_address' => $email, 'url' => $url, 'sender_email' => $senderEmail, 'sender_name' => $senderName]);
+    }
+
+    /**
+     * Password recovery for user resource
+     *
+     * This call will request a password recovery token of user resource
+     *
+     * @param int $uniqueId
+     *
+     * @access public
+     * @return string
+     */
+    public function processPasswordToken($password, $token)
+    {
+        return $this->call('user/passwordRecovery/', 'post', [$password, $token]);
+    }
+
+    /**
      * Create a user
      *
      * This call will create a user at the endpoint
