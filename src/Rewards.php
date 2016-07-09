@@ -150,6 +150,8 @@ class Rewards
         } else {
             $url .= '?lang=' . $this->lang;
         }
+
+        $url .= '&ip_address=' . $_SERVER['REMOTE_ADDR'];
         try {
 //            print_r($url);
 //            print_r($params);
@@ -230,7 +232,7 @@ class Rewards
      *
      * This call will request the resource $campaignId at the endpoint
      *
-     * @param int $campaignId
+     * @param int $redemptionId
      *
      * @access public
      * @return string
