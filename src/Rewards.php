@@ -193,11 +193,8 @@ class Rewards
 
         if( $this->type !== 'get' ) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($this->type));
-
-            if( !empty ( $params ) ) {
-                $params = $this->prepareQuery($params);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-            }
+            $params = $this->prepareQuery($params);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/x-www-form-urlencoded',
             ]);
@@ -715,6 +712,7 @@ class Rewards
         }
 
         $user = $user->user;
+
         return $this->call('user/' . $user->unique_id . '/transaction', 'post', $transaction);
     }
 }
