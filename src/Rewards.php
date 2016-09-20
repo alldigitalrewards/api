@@ -620,7 +620,7 @@ class Rewards
      */
     public function processPasswordToken($password, $token)
     {
-        return $this->call('user/passwordRecovery/', 'post', [$password, $token]);
+        return $this->call('user/passwordRecovery/', 'post', ['password' => $password, 'token' => $token]);
     }
 
     /**
