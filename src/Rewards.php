@@ -153,8 +153,6 @@ class Rewards
 
         $url .= '&ip_address=' . $_SERVER['REMOTE_ADDR'];
         try {
-//            print_r($url);
-//            print_r($params);
             $ch = curl_init($url);
             $this->prepareCURL($ch, $params);
             $data = curl_exec($ch);
@@ -234,9 +232,24 @@ class Rewards
      * @access public
      * @return string
      */
-    public function getRedemptionCampaign($id)
+    public function getRedemptionCampaign($redemptionId)
     {
-        return $this->call('redemption/' . $id, 'get');
+        return $this->call('redemption/' . $redemptionId, 'get');
+    }
+
+    /**
+     * Fetches pin eligibility
+     *
+     * This call will request ask the resource if the pin is available
+     *
+     * @param int $pin
+     *
+     * @access public
+     * @return string
+     */
+    public function isPinEligible($pin)
+    {
+        return $this->call('redemption/pin', 'post', ['pin' => $pin]);
     }
 
     /**
@@ -362,10 +375,9 @@ class Rewards
 
 
     /* Gamification */
-
-    public function fetchGameInstance($uniqueId, $gameId)
+    public function fetchGameInstance($uniqueId, $gameId, $meta = [])
     {
-        return $this->call('gamification/' . $uniqueId, 'post', ['game_id' => $gameId]);
+        return $this->call('gamification/' . $uniqueId, 'post', ['game_id' => $gameId, 'meta' => $meta]);
     }
 
     /**
@@ -698,21 +710,49 @@ class Rewards
      * @access public
      * @return string
      */
-    public function createUserTransaction($userIdentifier, array $transaction)
+    public function createUserTransaction($oUser, array $transaction)
     {
-        if(!is_int($userIdentifier)) {
-            $user = json_decode($this->getUser($userIdentifier->email_address));
-        } else {
-            $user = json_decode($this->getUser($userIdentifier));
+        $user = json_decode($this->getUser($oUser->unique_id));
+        if($user->success === false) {
+            $user = json_decode($this->createUser((array)$oUser));
         }
-
-        if($user->success === false && !is_int($userIdentifier)) {
-            $user = (array)$userIdentifier;
-            $user = json_decode($this->createUser($user));
+        //return error messages
+        if($user->success === false) {
+            return json_encode($user);
         }
-
         $user = $user->user;
 
         return $this->call('user/' . $user->unique_id . '/transaction', 'post', $transaction);
+    }
+
+    public function deletePendingUserRedemption($oUser, $code)
+    {
+        return $this->call('user/' . $oUser->unique_id . '/pendingRedemption', 'delete', ['pin' => $code]);
+    }
+
+    public function isRedemptionPending($oUser, $code)
+    {
+        $call = $this->call('user/' . $oUser->unique_id . '/pendingRedemption', 'get', ['pin' => $code]);
+        $decode = json_decode($call);
+        if($decode->success == false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function createPendingUserRedemption($oUser, array $transaction)
+    {
+        $user = json_decode($this->getUser($oUser->unique_id));
+        if($user->success === false) {
+            $user = json_decode($this->createUser((array)$oUser));
+        }
+        //return error messages
+        if($user->success === false) {
+            return json_encode($user);
+        }
+        $user = $user->user;
+
+        return $this->call('user/' . $user->unique_id . '/pendingRedemption', 'post', $transaction);
     }
 }
