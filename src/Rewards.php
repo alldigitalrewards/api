@@ -725,23 +725,18 @@ class Rewards
         return $this->call('user/' . $user->unique_id . '/transaction', 'post', $transaction);
     }
 
-    public function deletePendingUserRedemption($oUser, $code)
+    public function deletePendingRedemption($oUser, $code)
     {
         return $this->call('user/' . $oUser->unique_id . '/pendingRedemption', 'delete', ['pin' => $code]);
     }
 
-    public function isRedemptionPending($oUser, $code)
+    public function getPendingRedemption($oUser, $code)
     {
         $call = $this->call('user/' . $oUser->unique_id . '/pendingRedemption', 'get', ['pin' => $code]);
-        $decode = json_decode($call);
-        if($decode->success == false) {
-            return false;
-        }
-
-        return true;
+        return $call;
     }
 
-    public function createPendingUserRedemption($oUser, array $transaction)
+    public function createPendingRedemption($oUser, array $transaction)
     {
         $user = json_decode($this->getUser($oUser->unique_id));
         if($user->success === false) {
