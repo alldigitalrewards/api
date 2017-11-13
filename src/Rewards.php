@@ -34,6 +34,9 @@ class Rewards
     /** @var string full image url, 1440x? */
     private $lang = 'en';
 
+    /** @var string Country Code to filter requests by */
+    private $country_code = 'USA';
+
     /**
      * Class Construct
      *
@@ -71,6 +74,14 @@ class Rewards
     public function getLanguage()
     {
         return $this->lang;
+    }
+
+    /**
+     * @param string $country_code
+     */
+    public function setCountryCode($country_code)
+    {
+        $this->country_code = $country_code;
     }
 
     /**
@@ -144,6 +155,10 @@ class Rewards
     private function curl($endpoint, array $params)
     {
         $url = $this->apiUrl . '/' . $endpoint;
+
+        if (empty($params['country_code'])) {
+            $params['country_code'] = $this->country_code;
+        }
 
         if( $this->type === 'get' && ! empty ( $params ) ) {
             $url .= '?' . $this->prepareQuery($params) . '&lang=' . $this->lang;
