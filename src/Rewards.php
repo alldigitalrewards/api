@@ -740,6 +740,15 @@ class Rewards
         return $this->call('user/' . $user->unique_id . '/transaction', 'post', $transaction);
     }
 
+    public function creditPoints($uniqueId, $points)
+    {
+        return $this->call(
+            'user/' . $uniqueId . '/point/credit',
+            'post',
+            ['amount' => $points]
+        );
+    }
+
     public function deletePendingRedemption($oUser, $code)
     {
         return $this->call('user/' . $oUser->unique_id . '/pendingRedemption', 'delete', ['pin' => $code]);
